@@ -129,13 +129,19 @@ scrollTop.forEach((el)=>observer.observe(el))
 
 
 
-//send Email
-
 document.addEventListener("DOMContentLoaded", function () {
     emailjs.init("k4Z7v5eeAT3Qf70yD"); // Replace with your EmailJS user ID
 
-    document.getElementById("contact-form").addEventListener("submit", function (event) {
+    const form = document.getElementById("contact-form");
+    const submitBtn = form.querySelector("button[type='submit']");
+
+    form.addEventListener("submit", function (event) {
         event.preventDefault();
+
+        // Change submit button to loading state
+        submitBtn.disabled = true;
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = `<span class="spinner"></span> Sending...`;
 
         // Get form values
         const name = document.getElementById("name").value;
@@ -144,7 +150,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const phone = document.getElementById("phone").value;
         const message = document.getElementById("message").value;
 
-        // EmailJS template parameters
         const templateParams = {
             from_name: name,
             from_email: email,
@@ -153,45 +158,45 @@ document.addEventListener("DOMContentLoaded", function () {
             message: message,
         };
 
-        // Send email
         emailjs.send("service_0m4k8f9", "template_o4ly2zl", templateParams)
             .then(response => {
                 showToast("Message sent successfully!", "success");
-                document.getElementById("contact-form").reset();
+                form.reset();
             })
             .catch(error => {
                 console.error("Error sending email:", error);
                 showToast("Failed to send message. Please try again.", "error");
+            })
+            .finally(() => {
+                // Reset button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
             });
 
-                // Function to show toast message
-                function showToast(message, type) {
-                    const toastContainer = document.getElementById("toast-container");
-                    const toast = document.createElement("div");
-                    toast.className = `toast ${type === "error" ? "error" : ""}`;
-                    
-                    // Create close button
-                    const closeBtn = document.createElement("button");
-                    closeBtn.className = "close-btn";
-                    closeBtn.innerText = "×";
-                    closeBtn.onclick = () => {
-                        toast.classList.add("fade-out");
-                        setTimeout(() => toast.remove(), 500); // Remove after fade-out
-                    };
-                
-                    toast.textContent = message;
-                    toast.appendChild(closeBtn); // Add close button to the toast
-                    toastContainer.appendChild(toast);
-                
-                    // Show close button with smooth transition on hover
-                    setTimeout(() => toast.classList.add("show"), 10);
-                
-                    // Automatically remove the toast after 3 seconds
-                    setTimeout(() => {
-                        toast.classList.add("fade-out");
-                        setTimeout(() => toast.remove(), 500);
-                    }, 3000);
-                }
-                
-});
+        function showToast(message, type) {
+            const toastContainer = document.getElementById("toast-container");
+            const toast = document.createElement("div");
+            toast.className = `toast ${type === "error" ? "error" : ""}`;
+
+            const closeBtn = document.createElement("button");
+            closeBtn.className = "close-btn";
+            closeBtn.innerText = "×";
+            closeBtn.onclick = () => {
+                toast.classList.add("fade-out");
+                setTimeout(() => toast.remove(), 500);
+            };
+
+            toast.textContent = message;
+            toast.appendChild(closeBtn);
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => toast.classList.add("show"), 10);
+
+            setTimeout(() => {
+                toast.classList.add("fade-out");
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
     });
+});
+

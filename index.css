@@ -845,10 +845,28 @@ footer a i{
     transform: translateX(0);
 }
 
+.spinner {
+    border: 3px solid #f3f3f3; /* Light grey */
+    border-top: 3px solid #555; /* Darker color */
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+  }
+  
+
+  /*Key frames*/
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 
 
 
-/*Key frames*/
+
 
 
 @keyframes morph {
